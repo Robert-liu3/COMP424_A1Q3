@@ -1,12 +1,14 @@
 import random
 
+#create board where each index in the array represents a row, and the integer stored in the array represents a column
 def create_board(n):
     board = []
     for i in range (n):
         board.append(random.randint(0, n-1))
     return board
 
-def attacking_pairs(board):
+#check number of collisions on a board
+def num_collisions(board):
     n = len(board)
     num_pairs = 0
     for i in range(n):
@@ -15,53 +17,56 @@ def attacking_pairs(board):
                 num_pairs += 1
     return num_pairs
 
-def hill_climbing(n, max_iterations=100000):
-    current_board = create_board(n)
-    current_attacking_pairs = attacking_pairs(current_board)
-
-    #while loop is checking if your board is empty or not
-    for _ in range(max_iterations):
-        if current_attacking_pairs == 0:
-            return current_board
-        
-        next_board = current_board.copy()
-        row_to_change = random.randint(0, n-1)
-        min_attacking_pairs = current_attacking_pairs
-        prev_attacking_pairs = current_attacking_pairs
-
-        for col in range(n):
-            if current_board[row_to_change] != col:
-                next_board[row_to_change] = col
-                new_attacking_pairs = attacking_pairs(next_board)
-
-                if new_attacking_pairs < min_attacking_pairs:
-                    min_attacking_pairs = new_attacking_pairs
-                    current_board = next_board.copy()
-
-        current_attacking_pairs = min_attacking_pairs
-        if (current_attacking_pairs == prev_attacking_pairs):
-            return hill_climbing(n, max_iterations)
-        
+#print board
 def print_board(board):
     n = len(board)
     for i in range(n):
         row = ['Q' if j == board[i] else '.' for j in range(n)]
         print(" ".join(row))
-    print()
+
+
+def hill_climbing(n):
+    
+    #Get initial chess board and the number of collisions per board
+    current_board = create_board(n)
+    current_collisions = num_collisions(current_board)
+
+    #while loop is checking if your board has no more collisions
+    while True:
+        if current_collisions == 0:
+            return current_board
+        
+
+        next_board = current_board[:]
+        min_collisions = current_collisions
+        prev_collisions = current_collisions
+
+        #select random row to be modified
+        row_change = random.randint(0, n-1)
+
+        #go through each column, and change column of current queen to that column
+        for col in range(n):
+            if current_board[row_change] != col:
+                next_board[row_change] = col
+                new_collisions = num_collisions(next_board)
+
+                #check if the collisions decreased, if so, set new value of min collisions to that number of collisions, and set current board to the new board found
+                if new_collisions < min_collisions:
+                    min_collisions = new_collisions
+                    current_board = next_board[:]
+
+        current_collisions = min_collisions
+
+        #if there was no better solution found, restart recursively
+        if (current_collisions == prev_collisions):
+            return hill_climbing(n)
+        
 
 if __name__ == "__main__":
-    n = 8  # Change 'n' to the desired board size
-    solution = hill_climbing(n)
-
-    if solution:
-        print(f"Solution for {n}-Queens:")
-        print_board(solution)
+    n = 8
+    result = hill_climbing(n)
+    if result:
+        print_board(result)
     else:
-        print(f"No solution found for {n}-Queens within the maximum iterations.")
-
-#go through each row
-#try every possible column configuration for the queen
-#see which one results in a lower number of collisions
-#add them to a list of stuff to try out
-#try a new board
+        print("no sln found")
         
