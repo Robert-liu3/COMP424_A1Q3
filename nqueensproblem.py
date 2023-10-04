@@ -14,7 +14,7 @@ def calculate_attacking_pairs(board):
 
     return attacking_pairs
 
-def hill_climbing(n, max_iterations=10000):
+def hill_climbing(n, max_iterations=100000):
     current_board = generate_random_board(n)
     current_attacking_pairs = calculate_attacking_pairs(current_board)
 
