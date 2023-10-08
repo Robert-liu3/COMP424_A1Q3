@@ -67,6 +67,7 @@ if __name__ == "__main__":
     result = hill_climbing(n)
     if result:
         print_board(result)
+        print(result)
     else:
         print("no sln found")
         
